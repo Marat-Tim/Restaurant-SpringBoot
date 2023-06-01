@@ -1,15 +1,18 @@
 package com.example.authorization_service.service.implementation;
 
-import com.example.authorization_service.dto.JwtResponseDto;
+import com.example.authorization_service.domain.AuthException;
+import com.example.authorization_service.dto.TokenResponseDto;
 import com.example.authorization_service.dto.LoginDto;
 import com.example.authorization_service.dto.RegistrationDto;
 import com.example.authorization_service.dto.UserInfoDto;
+import com.example.authorization_service.entity.Session;
 import com.example.authorization_service.entity.User;
 import com.example.authorization_service.repository.SessionsRepository;
 import com.example.authorization_service.repository.UsersRepository;
 import com.example.authorization_service.service.abstraction.AuthService;
-import com.example.authorization_service.service.abstraction.HashFunction;
+import com.example.authorization_service.service.abstraction.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -21,7 +24,8 @@ import java.time.ZoneId;
 public class AuthServiceImpl implements AuthService {
     private final SessionsRepository sessionsRepository;
     private final UsersRepository usersRepository;
-    private final HashFunction hashFunction;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @Override
     public void registerNewUser(RegistrationDto registrationDto) {
@@ -32,17 +36,31 @@ public class AuthServiceImpl implements AuthService {
         Timestamp now = Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         userToSave.setCreatedAt(now);
         userToSave.setUpdatedAt(now);
-        userToSave.setPasswordHash(hashFunction.hash(registrationDto.getPassword()));
+        userToSave.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
         usersRepository.save(userToSave);
     }
 
     @Override
-    public JwtResponseDto loginUser(LoginDto loginDto) {
-        return null;
+    public TokenResponseDto loginUser(LoginDto loginDto) {
+        User user = usersRepository.findByEmail(loginDto.getLogin())
+                .orElseThrow(() -> new AuthException("Пользователь с таким логином не найден"));
+        if (!passwordEncoder.encode(loginDto.getPassword()).equals(user.getPasswordHash())) {
+            throw new AuthException("Неправильный пароль");
+        }
+        TokenResponseDto tokenResponseDto = new TokenResponseDto();
+        tokenResponseDto.setAccessToken(tokenProvider.generateAccessToken(user));
+        return tokenResponseDto;
     }
 
     @Override
     public UserInfoDto getInfoByToken(String accessToken) {
-        return null;
+        Session session = sessionsRepository.findByToken(accessToken)
+                .orElseThrow(() -> new AuthException("Не получилось найти сессию по токену"));
+        User user = session.getUser();
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setNickname(user.getUsername());
+        userInfoDto.setLogin(user.getEmail());
+        userInfoDto.setRole(user.getRole());
+        return userInfoDto;
     }
 }

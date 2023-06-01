@@ -10,4 +10,7 @@ spring:
   sql:
     init:
       mode: always
-
+my:
+  security:
+    access-expiration-minutes: 2
+    secret: VBNjVu1GYsMK95DcD/8R2RQ0kNqtjkMdAgFdy04EM9fBUnCUkhkL/AhqtThzU6lPdCv0gZ0zE611usayVgVrQTwd0IpxQIGIoT+tlh+tTnoLNctKkPr830cn6u0ygK9HzpJcjg==
