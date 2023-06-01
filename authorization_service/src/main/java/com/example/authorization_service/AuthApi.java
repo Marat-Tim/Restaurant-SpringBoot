@@ -11,8 +11,8 @@ public interface AuthApi {
     JwtResponseDto register(@RequestBody RegistrationDto registrationDto);
 
     @PostMapping("/login")
-    JwtResponseDto login(@RequestBody LoginDto registrationDto);
+    JwtResponseDto login(@RequestBody LoginDto loginDto);
 
     @GetMapping("/info")
-    UserInfoDto info(@RequestBody String token);
+    UserInfoDto info(@RequestBody String accessToken);
 }
