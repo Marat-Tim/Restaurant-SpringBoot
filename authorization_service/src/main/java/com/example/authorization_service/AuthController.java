@@ -1,14 +1,13 @@
 package com.example.authorization_service;
 
 import com.example.authorization_service.domain.AuthException;
-import com.example.authorization_service.dto.TokenResponseDto;
 import com.example.authorization_service.dto.LoginDto;
 import com.example.authorization_service.dto.RegistrationDto;
+import com.example.authorization_service.dto.TokenResponseDto;
 import com.example.authorization_service.dto.UserInfoDto;
 import com.example.authorization_service.service.abstraction.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;

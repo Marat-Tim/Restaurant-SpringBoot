@@ -14,17 +14,14 @@ import com.example.authorization_service.service.abstraction.AuthService;
 import com.example.authorization_service.service.abstraction.TokenProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,10 +72,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserInfoDto getInfoByToken(String accessToken) {
         Claims claims = tokenProvider.getClaims(accessToken);
-        Session session = sessionsRepository.findByUserId(claims.get("user_id", Long.class))
-                .stream().max(Comparator.comparing(Session::getExpiresAt))
-                .orElseThrow(() -> new RuntimeException("В базе данных нет пользователя с таким user_id"));
-        User user = session.getUser();
+        User user = usersRepository.findById(claims.get("user_id", Long.class))
+                .orElseThrow(() -> new AuthException("Пользователя с переданным идентификатором не существует"));
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.setNickname(user.getUsername());
         userInfoDto.setLogin(user.getEmail());

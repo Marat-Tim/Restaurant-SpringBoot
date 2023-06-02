@@ -3,9 +3,7 @@ package com.example.authorization_service.entity;
 import com.example.authorization_service.DateUtils;
 import com.example.authorization_service.domain.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
@@ -15,14 +13,7 @@ import java.sql.Timestamp;
 public class User {
     @PrePersist
     public void prePersist() {
-        Timestamp now = new Timestamp(DateUtils.now().getTime());
-        createdAt = now;
-        updatedAt = now;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = new Timestamp(DateUtils.now().getTime());
+        createdAt = new Timestamp(DateUtils.now().getTime());
     }
 
     @Id
