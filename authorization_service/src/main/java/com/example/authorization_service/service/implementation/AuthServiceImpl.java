@@ -1,9 +1,10 @@
 package com.example.authorization_service.service.implementation;
 
+import com.example.authorization_service.DateUtils;
 import com.example.authorization_service.domain.AuthException;
-import com.example.authorization_service.dto.TokenResponseDto;
 import com.example.authorization_service.dto.LoginDto;
 import com.example.authorization_service.dto.RegistrationDto;
+import com.example.authorization_service.dto.TokenResponseDto;
 import com.example.authorization_service.dto.UserInfoDto;
 import com.example.authorization_service.entity.Session;
 import com.example.authorization_service.entity.User;
@@ -11,13 +12,20 @@ import com.example.authorization_service.repository.SessionsRepository;
 import com.example.authorization_service.repository.UsersRepository;
 import com.example.authorization_service.service.abstraction.AuthService;
 import com.example.authorization_service.service.abstraction.TokenProvider;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    @Value("${my.security.access-expiration-minutes}")
+    private long accessExpirationMinutes;
 
     @Override
     public void registerNewUser(RegistrationDto registrationDto) {
@@ -33,34 +43,56 @@ public class AuthServiceImpl implements AuthService {
         userToSave.setUsername(registrationDto.getNickname());
         userToSave.setEmail(registrationDto.getLogin());
         userToSave.setRole(registrationDto.getRole());
-        Timestamp now = Timestamp.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
-        userToSave.setCreatedAt(now);
-        userToSave.setUpdatedAt(now);
         userToSave.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
-        usersRepository.save(userToSave);
+        try {
+            usersRepository.save(userToSave);
+        } catch (DataAccessException e) {
+            throw new AuthException("Не получилось создать пользователя");
+        }
     }
 
     @Override
     public TokenResponseDto loginUser(LoginDto loginDto) {
         User user = usersRepository.findByEmail(loginDto.getLogin())
                 .orElseThrow(() -> new AuthException("Пользователь с таким логином не найден"));
-        if (!passwordEncoder.encode(loginDto.getPassword()).equals(user.getPasswordHash())) {
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
             throw new AuthException("Неправильный пароль");
         }
         TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        tokenResponseDto.setAccessToken(tokenProvider.generateAccessToken(user));
+        Optional<Session> lastSession =
+                sessionsRepository.findByUser(user)
+                        .stream().max(Comparator.comparing(Session::getExpiresAt));
+        if (lastSession.isPresent() && lastSession.get().getExpiresAt().after(DateUtils.now())) {
+            tokenResponseDto.setAccessToken(lastSession.get().getToken());
+        } else {
+            Session newSession = generateNewSession(user);
+            sessionsRepository.save(newSession);
+            tokenResponseDto.setAccessToken(newSession.getToken());
+        }
         return tokenResponseDto;
     }
 
     @Override
     public UserInfoDto getInfoByToken(String accessToken) {
-        Session session = sessionsRepository.findByToken(accessToken)
-                .orElseThrow(() -> new AuthException("Не получилось найти сессию по токену"));
+        Claims claims = tokenProvider.getClaims(accessToken);
+        Session session = sessionsRepository.findByUserId(claims.get("user_id", Long.class))
+                .stream().max(Comparator.comparing(Session::getExpiresAt))
+                .orElseThrow(() -> new RuntimeException("В базе данных нет пользователя с таким user_id"));
         User user = session.getUser();
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.setNickname(user.getUsername());
         userInfoDto.setLogin(user.getEmail());
         userInfoDto.setRole(user.getRole());
+        userInfoDto.setCreatedAt(user.getCreatedAt().toLocalDateTime());
         return userInfoDto;
+    }
+
+    private Session generateNewSession(User user) {
+        Session newSession = new Session();
+        newSession.setUser(user);
+        Date accessExpiration = DateUtils.nowPlusMinutes(accessExpirationMinutes);
+        newSession.setExpiresAt(new Timestamp(accessExpiration.getTime()));
+        newSession.setToken(tokenProvider.generateAccessToken(user, accessExpiration));
+        return newSession;
     }
 }

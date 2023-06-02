@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./database
+    url: jdbc:h2:file:./authorization_service/database;DATABASE_TO_UPPER=false
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -10,7 +10,10 @@ spring:
   sql:
     init:
       mode: always
+  h2:
+    console:
+      enabled: true
 my:
   security:
-    access-expiration-minutes: 2
+    access-expiration-minutes: 1
     secret: VBNjVu1GYsMK95DcD/8R2RQ0kNqtjkMdAgFdy04EM9fBUnCUkhkL/AhqtThzU6lPdCv0gZ0zE611usayVgVrQTwd0IpxQIGIoT+tlh+tTnoLNctKkPr830cn6u0ygK9HzpJcjg==
