@@ -1,2 +1,17 @@
 server:
   port: 9001
+spring:
+  datasource:
+    url: jdbc:h2:file:./orders_service/database;DATABASE_TO_UPPER=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
