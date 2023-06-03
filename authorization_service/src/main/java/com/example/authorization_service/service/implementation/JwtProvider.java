@@ -28,7 +28,7 @@ public class JwtProvider implements TokenProvider {
                 .setSubject(user.getEmail())
                 .setExpiration(accessExpiration)
                 .signWith(secretKey)
-                .claim("role", user.getRole())
+                .claim("role", user.getRole().name())
                 .claim("nickname", user.getUsername())
                 .claim("user_id", user.getId())
                 .compact();
@@ -41,7 +41,7 @@ public class JwtProvider implements TokenProvider {
                     Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
             return new UserInfo(
                     claims.getSubject(),
-                    claims.get("role", Role.class),
+                    Role.valueOf(claims.get("role", String.class)),
                     claims.get("nickname", String.class),
                     claims.get("user_id", Long.class));
         } catch (ExpiredJwtException e) {
