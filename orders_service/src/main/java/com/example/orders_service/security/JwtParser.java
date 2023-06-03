@@ -3,57 +3,24 @@ package com.example.orders_service.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 
 @Component
-public class JwtFilter extends GenericFilterBean {
-    private static final String BEARER = "Bearer ";
-
-    private static final String AUTHORIZATION = "Authorization";
-
+public class JwtParser implements TokenParser {
     private final SecretKey secretKey;
 
-    public JwtFilter(@Value("${my.security.secret}") String secret) {
+    public JwtParser(@Value("${my.security.secret}") String secret) {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
-        try {
-            var token = getTokenFromRequest((HttpServletRequest) request);
-            Claims claims = getClaims(token);
-            Authentication authentication = convertClaimsToAuthentication(claims);
-            authentication.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException ignored) {
-
-        }
-        filterChain.doFilter(request, response);
-    }
-
-    private String getTokenFromRequest(HttpServletRequest request) {
-        final var bearer = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(bearer) && bearer.startsWith(BEARER)) {
-            return bearer.substring(BEARER.length());
-        }
-        throw new BadCredentialsException("Нет заголовка \"Bearer\" в запросе");
+    public Authentication parseToken(String accessToken) {
+        return convertClaimsToAuthentication(getClaims(accessToken));
     }
 
     private static Authentication convertClaimsToAuthentication(Claims claims) {

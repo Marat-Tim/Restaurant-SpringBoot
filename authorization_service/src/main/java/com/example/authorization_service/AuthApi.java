@@ -14,5 +14,5 @@ public interface AuthApi {
     TokenResponseDto login(@RequestBody LoginDto loginDto);
 
     @GetMapping("/info")
-    UserInfoDto info(@RequestHeader String accessToken);
+    UserInfoDto info(@RequestParam String accessToken);
 }
