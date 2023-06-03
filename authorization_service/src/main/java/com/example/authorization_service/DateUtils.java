@@ -24,12 +24,5 @@ public class DateUtils {
                         .atZone(ZoneId.systemDefault()).toInstant()
         );
     }
-
-    public static Date nowMinusMinutes(long minutes) {
-        return Date.from(
-                LocalDateTime.now().minusMinutes(minutes)
-                        .atZone(ZoneId.systemDefault()).toInstant()
-        );
-    }
 }
 

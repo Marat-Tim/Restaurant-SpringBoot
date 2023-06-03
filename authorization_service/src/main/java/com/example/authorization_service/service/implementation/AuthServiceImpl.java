@@ -2,6 +2,7 @@ package com.example.authorization_service.service.implementation;
 
 import com.example.authorization_service.DateUtils;
 import com.example.authorization_service.domain.AuthException;
+import com.example.authorization_service.domain.UserInfo;
 import com.example.authorization_service.dto.LoginDto;
 import com.example.authorization_service.dto.RegistrationDto;
 import com.example.authorization_service.dto.TokenResponseDto;
@@ -12,7 +13,6 @@ import com.example.authorization_service.repository.SessionsRepository;
 import com.example.authorization_service.repository.UsersRepository;
 import com.example.authorization_service.service.abstraction.AuthService;
 import com.example.authorization_service.service.abstraction.TokenProvider;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
@@ -71,8 +71,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserInfoDto getInfoByToken(String accessToken) {
-        Claims claims = tokenProvider.getClaims(accessToken);
-        User user = usersRepository.findById(claims.get("user_id", Long.class))
+        UserInfo userInfo = tokenProvider.getUserInfo(accessToken);
+        User user = usersRepository.findById(userInfo.getUserId())
                 .orElseThrow(() -> new AuthException("Пользователя с переданным идентификатором не существует"));
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.setNickname(user.getUsername());

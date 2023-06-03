@@ -1,6 +1,8 @@
 package com.example.authorization_service.service.implementation;
 
 import com.example.authorization_service.domain.AuthException;
+import com.example.authorization_service.domain.Role;
+import com.example.authorization_service.domain.UserInfo;
 import com.example.authorization_service.entity.User;
 import com.example.authorization_service.service.abstraction.TokenProvider;
 import io.jsonwebtoken.*;
@@ -33,9 +35,15 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public Claims getClaims(String token) {
+    public UserInfo getUserInfo(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+            Claims claims =
+                    Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+            return new UserInfo(
+                    claims.getSubject(),
+                    claims.get("role", Role.class),
+                    claims.get("nickname", String.class),
+                    claims.get("user_id", Long.class));
         } catch (ExpiredJwtException e) {
             throw new AuthException("Срок действия токена истек");
         } catch (UnsupportedJwtException |
