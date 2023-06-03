@@ -9,12 +9,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -34,11 +36,15 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        var token = getTokenFromRequest((HttpServletRequest) request);
-        Claims claims = getClaims(token);
-        Authentication authentication = convertClaimsToAuthentication(claims);
-        authentication.setAuthenticated(true);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            var token = getTokenFromRequest((HttpServletRequest) request);
+            Claims claims = getClaims(token);
+            Authentication authentication = convertClaimsToAuthentication(claims);
+            authentication.setAuthenticated(true);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (BadCredentialsException ignored) {
+
+        }
         filterChain.doFilter(request, response);
     }
 
