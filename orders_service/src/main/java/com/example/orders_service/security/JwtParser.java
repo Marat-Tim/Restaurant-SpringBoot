@@ -25,7 +25,7 @@ public class JwtParser implements TokenParser {
 
     private static Authentication convertClaimsToAuthentication(Claims claims) {
         JwtAuthentication authentication = new JwtAuthentication();
-        authentication.setRole(claims.get("role", Role.class));
+        authentication.setRole(Role.valueOf(claims.get("role", String.class)));
         authentication.setNickname(claims.get("nickname", String.class));
         authentication.setLogin(claims.getSubject());
         authentication.setUserId(claims.get("user_id", Long.class));

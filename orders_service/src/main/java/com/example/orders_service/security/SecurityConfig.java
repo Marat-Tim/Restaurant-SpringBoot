@@ -20,6 +20,8 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 public class SecurityConfig {
     private final TokenFilter tokenFilter;
 
+    private final CustomExceptionHandler exceptionHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -34,9 +36,12 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .csrf().ignoringRequestMatchers(toH2Console())
-                .and()
+                .csrf().disable()
                 .headers().frameOptions().sameOrigin()
+                .and()
+                .exceptionHandling()
+                    .accessDeniedHandler(exceptionHandler)
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint(exceptionHandler))
                 .and()
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -14,6 +14,6 @@ public interface DishApi {
     @PatchMapping("/update")
     void updateDish(@RequestParam long id, @RequestBody DishDto updateDishDto);
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     void deleteDish(@RequestParam long id);
 }
