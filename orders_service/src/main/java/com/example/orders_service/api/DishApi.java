@@ -1,15 +1,16 @@
 package com.example.orders_service.api;
 
 import com.example.orders_service.dto.DishDto;
+import com.example.orders_service.entity.Dish;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/dish")
 public interface DishApi {
     @PostMapping("/create")
-    Long createNewDish(@RequestBody DishDto dishDto);
+    long createNewDish(@RequestBody DishDto dishDto);
 
     @GetMapping("/get")
-    DishDto getDish(@RequestParam long id);
+    Dish getDish(@RequestParam long id);
 
     @PatchMapping("/update")
     void updateDish(@RequestParam long id, @RequestBody DishDto updateDishDto);

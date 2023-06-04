@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
 
@@ -28,9 +27,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final SessionsRepository sessionsRepository;
+
     private final UsersRepository usersRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final TokenProvider tokenProvider;
+
     @Value("${my.security.access-expiration-minutes}")
     private long accessExpirationMinutes;
 
@@ -56,9 +59,7 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException("Неправильный пароль");
         }
         TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        Optional<Session> lastSession =
-                sessionsRepository.findByUser(user)
-                        .stream().max(Comparator.comparing(Session::getExpiresAt));
+        Optional<Session> lastSession = sessionsRepository.lastSessionForUser(user);
         if (lastSession.isPresent() && lastSession.get().getExpiresAt().after(DateUtils.now())) {
             tokenResponseDto.setAccessToken(lastSession.get().getToken());
         } else {

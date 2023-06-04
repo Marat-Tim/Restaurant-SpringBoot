@@ -1,7 +1,6 @@
 package com.example.authorization_service.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 @AllArgsConstructor

@@ -47,9 +47,10 @@ public class JwtProvider implements TokenProvider {
         } catch (ExpiredJwtException e) {
             throw new AuthException("Срок действия токена истек");
         } catch (UnsupportedJwtException |
-                MalformedJwtException |
-                SignatureException | // и что мне делать? Написано, что ошибка устаревшая, но из сигнатуры метода ее не убрали
-                IllegalArgumentException e) {
+                 MalformedJwtException |
+                 SignatureException |
+                 // и что мне делать? Написано, что ошибка устаревшая, но из сигнатуры метода ее не убрали
+                 IllegalArgumentException e) {
             throw new AuthException(e.getMessage());
         }
     }
