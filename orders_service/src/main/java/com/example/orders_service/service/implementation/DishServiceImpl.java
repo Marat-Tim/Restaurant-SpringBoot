@@ -28,7 +28,7 @@ public class DishServiceImpl implements DishService {
     public DishInfoForManagerDto getDishById(long id) {
         Dish dish = dishRepository.findById(id)
                 .orElseThrow(() -> new DishException("Блюда с таким id не существует"));
-        return dishMapper.mapToDishFroManagerDto(dish);
+        return dishMapper.mapToDishForManagerDto(dish);
     }
 
     @Override

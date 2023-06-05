@@ -30,7 +30,7 @@ public class Dish {
     private int quantity;
 
     @Column(name = "is_available", nullable = false)
-    private boolean isAvailable;
+    private boolean isAvailable = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

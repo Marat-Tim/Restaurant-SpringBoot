@@ -15,6 +15,8 @@ public class DishInfoForManagerDto {
 
     private int quantity;
 
+    private boolean isAvailable;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

@@ -13,4 +13,6 @@ public class DishDto {
     private BigDecimal price;
 
     private int quantity;
+
+    private boolean isAvailable;
 }
