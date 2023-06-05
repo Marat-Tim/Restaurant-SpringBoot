@@ -16,6 +16,7 @@ public class RegistrationDto {
     @Email(message = "Логин должен быть в формате электронной почты")
     private String login;
 
+    @Password(message = "Пароль должен содержать цифры, большие буквы и маленькие буквы")
     private String password;
 
     private Role role;

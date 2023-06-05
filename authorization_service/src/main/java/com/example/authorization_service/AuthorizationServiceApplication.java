@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@EnableWebMvc
 public class AuthorizationServiceApplication {
 
     @Bean

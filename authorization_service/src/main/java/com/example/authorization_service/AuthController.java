@@ -62,6 +62,6 @@ public class AuthController implements AuthApi {
         for (FieldError fieldError : fieldErrors) {
             errorMessages.add(fieldError.getDefaultMessage());
         }
-        return ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, errorMessages.toString());
+        return ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, String.join("|", errorMessages));
     }
 }
