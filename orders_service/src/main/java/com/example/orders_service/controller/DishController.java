@@ -2,6 +2,7 @@ package com.example.orders_service.controller;
 
 import com.example.orders_service.api.DishApi;
 import com.example.orders_service.dto.DishDto;
+import com.example.orders_service.dto.DishInfoForManagerDto;
 import com.example.orders_service.entity.Dish;
 import com.example.orders_service.service.abstraction.DishService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class DishController implements DishApi {
     }
 
     @Override
-    public Dish getDish(long id) {
+    public DishInfoForManagerDto getDish(long id) {
         return dishService.getDishById(id);
     }
 

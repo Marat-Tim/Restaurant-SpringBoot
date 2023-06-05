@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class OrderInfoDto {
     long id;
+
     String status;
 }

@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class DishToBeOrderedDto {
     long id;
+
     long count;
 }

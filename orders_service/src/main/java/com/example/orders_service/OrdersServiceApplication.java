@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 public class OrdersServiceApplication {
     @Bean
     public OpenAPI customOpenAPI() {
