@@ -10,5 +10,5 @@ public interface OrdersApi {
     long createOrder(@RequestBody NewOrderDto newOrderDto);
 
     @GetMapping("/info")
-    OrderInfoDto getInfoAboutOrder(@RequestHeader Long orderId);
+    OrderInfoDto getInfoAboutOrder(@RequestHeader long orderId);
 }

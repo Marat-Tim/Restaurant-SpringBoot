@@ -21,7 +21,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        customExceptionHandler.handle(request, response, new AccessDeniedException("Access Denied"));
+        customExceptionHandler.handle(request, response, new AccessDeniedException("Вы не авторизованы"));
     }
 }
 

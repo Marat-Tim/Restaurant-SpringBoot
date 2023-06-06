@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
@@ -44,6 +45,15 @@ public class SecurityConfig {
                     .authenticationEntryPoint(new CustomAuthenticationEntryPoint(exceptionHandler))
                 .and()
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(characterEncodingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+
+    public CharacterEncodingFilter characterEncodingFilter() {
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        return filter;
     }
 }

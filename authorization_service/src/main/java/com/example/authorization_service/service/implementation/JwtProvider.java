@@ -7,6 +7,7 @@ import com.example.authorization_service.entity.User;
 import com.example.authorization_service.service.abstraction.TokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,8 @@ public class JwtProvider implements TokenProvider {
                     claims.get("user_id", Long.class));
         } catch (ExpiredJwtException e) {
             throw new AuthException("Срок действия токена истек");
-        } catch (UnsupportedJwtException |
+        } catch (DecodingException |
+                 UnsupportedJwtException |
                  MalformedJwtException |
                  SignatureException |
                  // и что мне делать? Написано, что ошибка устаревшая, но из сигнатуры метода ее не убрали
