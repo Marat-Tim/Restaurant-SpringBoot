@@ -4,8 +4,7 @@ import com.example.orders_service.api.DishApi;
 import com.example.orders_service.domain.DishException;
 import com.example.orders_service.dto.DishDto;
 import com.example.orders_service.dto.DishInfoForManagerDto;
-import com.example.orders_service.entity.Dish;
-import com.example.orders_service.service.abstraction.DishService;
+import com.example.orders_service.service.abstraction.Warehouse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,30 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('manager')")
 public class DishController implements DishApi {
-    private final DishService dishService;
+    private final Warehouse warehouse;
 
     @Override
     public long createNewDish(DishDto dishDto) {
-        return dishService.createNewDish(dishDto);
+        return warehouse.createNewDish(dishDto);
     }
 
     @Override
     public DishInfoForManagerDto getDish(long id) {
-        return dishService.getDishById(id);
+        return warehouse.getDishById(id);
     }
 
     @Override
     public void updateDish(long id, DishDto dishDto) {
-        dishService.updateDishById(id, dishDto);
+        warehouse.updateDishById(id, dishDto);
     }
 
     @Override
     public void deleteDish(long id) {
-        dishService.deleteDishById(id);
+        warehouse.deleteDishById(id);
     }
 
     @ExceptionHandler(DishException.class)
     public ErrorResponse handleException(DishException e) {
-        return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ErrorResponse.create(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 }

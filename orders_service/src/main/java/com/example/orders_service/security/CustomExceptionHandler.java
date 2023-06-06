@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -21,14 +23,28 @@ public class CustomExceptionHandler implements AccessDeniedHandler {
                        AccessDeniedException ex)
             throws IOException, ServletException {
         response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write(new ObjectMapper().writeValueAsString(new ErrorResponse(ex.getMessage())));
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(new ObjectMapper()
+                .writeValueAsString(new MyErrorResponse(
+                        "about:blank",
+                        "Unauthorized",
+                        401,
+                        ex.getMessage(),
+                        request.getRequestURI())));
     }
 
-    @Data
     @AllArgsConstructor
-    private static class ErrorResponse {
-        private String message;
+    @Getter
+    static class MyErrorResponse {
+        private String type;
+
+        private String title;
+
+        private int status;
+
+        private String detail;
+
+        private String instance;
     }
 }
 
