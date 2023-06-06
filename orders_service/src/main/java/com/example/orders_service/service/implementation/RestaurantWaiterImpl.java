@@ -64,7 +64,7 @@ public class RestaurantWaiterImpl implements RestaurantWaiter {
             orderDish.setQuantity(dishes.get(i).getCount());
             orderDish.setPrice(
                     dishEntities.get(i).getPrice()
-                            .divideToIntegralValue(new BigDecimal(orderDish.getQuantity())));
+                            .multiply(new BigDecimal(orderDish.getQuantity())));
             orderDishRepository.save(orderDish);
         }
         return savedOrder.getId();
