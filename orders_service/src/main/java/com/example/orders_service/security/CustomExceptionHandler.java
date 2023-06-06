@@ -35,7 +35,7 @@ public class CustomExceptionHandler implements AccessDeniedHandler {
 
     @AllArgsConstructor
     @Getter
-    static class MyErrorResponse {
+    private static class MyErrorResponse {
         private String type;
 
         private String title;

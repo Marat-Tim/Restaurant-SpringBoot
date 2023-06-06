@@ -21,7 +21,7 @@ public class Order {
 
     @Column(name = "status", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.adopted;
+    private OrderStatus status = OrderStatus.in_progress;
 
     @Column(name = "special_requests")
     private String specialRequests;
