@@ -13,7 +13,6 @@ import com.example.orders_service.repository.OrderRepository;
 import com.example.orders_service.service.abstraction.RestaurantWaiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

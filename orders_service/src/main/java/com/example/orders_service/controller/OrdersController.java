@@ -1,11 +1,9 @@
 package com.example.orders_service.controller;
 
 import com.example.orders_service.api.OrdersApi;
-import com.example.orders_service.domain.DishException;
 import com.example.orders_service.domain.OrderException;
 import com.example.orders_service.dto.NewOrderDto;
 import com.example.orders_service.dto.OrderInfoDto;
-import com.example.orders_service.entity.Order;
 import com.example.orders_service.security.JwtAuthentication;
 import com.example.orders_service.service.abstraction.RestaurantWaiter;
 import lombok.RequiredArgsConstructor;

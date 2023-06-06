@@ -39,7 +39,8 @@ public class JwtParser implements TokenParser {
             throw new BadCredentialsException("Срок действия токена истек");
         } catch (UnsupportedJwtException |
                  MalformedJwtException |
-                 SignatureException | // и что мне делать? Написано, что ошибка устаревшая, но из сигнатуры метода ее не убрали
+                 SignatureException |
+                 // и что мне делать? Написано, что ошибка устаревшая, но из сигнатуры метода ее не убрали
                  IllegalArgumentException e) {
             throw new BadCredentialsException(e.getMessage());
         }
